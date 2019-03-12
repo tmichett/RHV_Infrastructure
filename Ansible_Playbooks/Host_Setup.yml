@@ -1,0 +1,54 @@
+---
+- hosts: rhv-m.example.com
+  user: ansible-user
+  become: true
+  vars_files:
+    # Contains variables to connect to the Manager
+    - engine_vars.yml
+    # Contains encrypted engine_password variable using ansible-vault
+    - passwords.yml
+
+  pre_tasks:
+    - name: Login to RHV
+      ovirt_auth:
+        url: "{{ engine_url }}"
+        username: "{{ engine_user }}"
+        password: "{{ engine_password }}"
+        ca_file: "{{ engine_cafile | default(omit) }}"
+        insecure: "{{ engine_insecure | default(true) }}"
+      tags:
+        - always
+
+  vars:
+    data_center_name: Development
+    cluster_name: Development_Cluster
+    cluster_description: Develeopment Cluster
+    # host_name: rhel-h-1
+    # host_fqdn_name: rhel-h-1.example.com
+
+  tasks:
+    - name: Add Host RHEL-H-1
+      ovirt_host:
+        auth: "{{ ovirt_auth }}"
+        cluster: "{{ cluster_name }}"
+        state: present
+        name: rhel-h-1
+        address: rhel-h-1.example.com
+        password: "{{ root_password }}"
+
+    - name: Add Host RHV-H-1
+      ovirt_host:
+        auth: "{{ ovirt_auth }}"
+        cluster: "{{ cluster_name }}"
+        state: present
+        name: rhv-h-1
+        address: rhv-h-1.example.com
+        password: "{{ root_password }}"
+
+  post_tasks:
+    - name: Logout from RHV
+      ovirt_auth:
+        state: absent
+        ovirt_auth: "{{ ovirt_auth }}"
+      tags:
+        - alwaysovi

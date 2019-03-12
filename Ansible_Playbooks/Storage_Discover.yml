@@ -1,0 +1,86 @@
+---
+- hosts: rhv-m.example.com
+  gather_facts: no 
+  user: ansible-user
+  become: true
+  vars_files:
+    # Contains variables to connect to the Manager
+    - engine_vars.yml
+    # Contains encrypted engine_password variable using ansible-vault
+    - passwords.yml
+
+  pre_tasks:
+    - name: Login to RHV
+      ovirt_auth:
+        url: "{{ engine_url }}"
+        username: "{{ engine_user }}"
+        password: "{{ engine_password }}"
+        ca_file: "{{ engine_cafile | default(omit) }}"
+        insecure: "{{ engine_insecure | default(true) }}"
+      tags:
+        - always
+
+  vars:
+    data_center_name: Development
+    cluster_name: Development_Cluster
+    cluster_description: Develeopment Cluster
+
+  tasks:
+    - name: Gather iSCSI Facts
+      ovirt_host_storage_facts:
+        auth: "{{ ovirt_auth }}"
+        host: rhel-h-1
+        iscsi:
+         target: iqn.2019-08.com.example:prodiscsivm 
+         address: 192.0.3.50
+      register: dev_results
+      # var: dev_results.ovirt_host_storages.id
+#        set_fact:
+#          lun_id: hostvars.id
+#    - debug:
+#        msg: "{{ item.ovirt_host_storages.id }}"
+#      with_items: '{{ dev_results.results  }}'
+#        var: "{{ dev_results.ovirt_host_storages.id }}"
+    - name: Output of dev_results
+      debug:
+        var: dev_results
+
+    - name: Setup iSCSI Storage Facts
+      set_fact:
+        lun_id: "{{ ovirt_host_storages | map(attribute='id') | list }}"
+    
+    - name: output of LUN ID
+      debug:
+         var: lun_id
+
+    - name: output of Ansible facts
+      debug:
+         var: ansible_facts
+        # var: dev_results['ansible_facts']['ovirt_host_storages']['logical_units']['id'] 
+    - name: Output of Ansible Facts Host Storage ID
+      debug:
+         #var: ansible_facts.ovirt_host_storages
+         #msg: "{{ lun_id.response | map(attribute='id') | list }}"
+         msg: "{{ ovirt_host_storages | map(attribute='id') | list }}"
+    - name: Setup iSCSI Storage
+      ovirt_storage_domain:
+        auth: "{{ ovirt_auth }}"
+        data_center: "{{ data_center_name }}"
+        host: rhel-h-1
+        iscsi:
+          target: iqn.2019-08.com.example:prodiscsivm
+          lun_id: "{{ lun_id }}" 
+          address: 192.0.3.50
+        name: test
+        domain_function: data
+        state: present
+        wipe_after_delete: no
+        discard_after_delete: no
+
+  post_tasks:
+    - name: Logout from RHV
+      ovirt_auth:
+        state: absent
+        ovirt_auth: "{{ ovirt_auth }}"
+      tags:
+        - alwaysovi

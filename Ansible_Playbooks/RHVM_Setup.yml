@@ -1,0 +1,49 @@
+---
+- hosts: rhv-m.example.com
+  user: ansible-user
+  become: true
+  vars_files:
+    # Contains variables to connect to the Manager
+    - engine_vars.yml
+    # Contains encrypted engine_password variable using ansible-vault
+    - passwords.yml
+
+
+  vars:
+    data_center_name: Development
+
+  tasks:
+    - name: Copy REPO File
+      get_url:
+        url: http://classroom.example.com/materials/rhv-42-manager.repo
+        dest: /etc/yum.repos.d/rhv-42-rhel-host.repo
+        mode: 0644
+    - name: Perform YUM Update
+      yum:
+        name: '*'
+        state: latest
+    - name: Install firewalld Packages
+      yum:
+        name: firewalld
+        state: latest
+    - name: Install RHV-M Packages
+      yum:
+        name: rhvm
+        state: latest
+    - template:
+        src: ./templates/rhvm_answers.j2
+        dest: /tmp/rhv-setup.conf
+        owner: root
+        group: root
+        mode: 0644
+    - name: Run RHV engine-setup
+      shell: |
+        engine-setup --config-append=/tmp/rhv-setup.conf
+    - name: Copy Custom SSO File
+      copy:
+        src: ./Resources/99-custom-sso-setup.conf
+        dest: /etc/ovirt-engine/engine.conf.d/99-custom-sso-setup.conf
+    - name: Restart RHV-M Application
+      service:
+        name: ovirt-engine
+        state: restarted

@@ -1,0 +1,208 @@
+---
+- hosts: rhv-m.example.com
+  user: ansible-user
+  become: true
+  vars_files:
+    # Contains variables to connect to the Manager
+    - engine_vars.yml
+    # Contains encrypted engine_password variable using ansible-vault
+    - passwords.yml
+
+  pre_tasks:
+    - name: Login to RHV
+      ovirt_auth:
+        url: "{{ engine_url }}"
+        username: "{{ engine_user }}"
+        password: "{{ engine_password }}"
+        ca_file: "{{ engine_cafile | default(omit) }}"
+        insecure: "{{ engine_insecure | default(true) }}"
+      tags:
+        - always
+
+  vars:
+    data_center_name: Development
+    cluster_name: Development_Cluster
+    cluster_description: Develeopment Cluster
+
+  tasks:
+    - name: Setup Display Network
+      ovirt_network:
+        auth: "{{ ovirt_auth }}"
+        data_center: "{{ data_center_name }}"
+        name: Display_Net
+        clusters:
+         - name: "{{ cluster_name }}"
+           assigned: true
+           required: true
+           display: true
+           migration: true
+           gluster: false
+        comment: Development DataCenter Display Network
+        description: Display Network
+        label: Display_Network
+        vm_network: false
+        state: present
+        vlan_tag: 4
+
+    - name: Setup Storage Network
+      ovirt_network:
+        auth: "{{ ovirt_auth }}"
+        data_center: "{{ data_center_name }}"
+        name: Storage_Net
+        clusters:
+         - name: "{{ cluster_name }}"
+           assigned: true
+           required: true
+           display: false
+           migration: true
+           gluster: false
+        comment: Development DataCenter Storage Network
+        description: Storage Network
+        label: Storage_Network
+        vm_network: false
+        state: present
+        vlan_tag: 3
+
+    - name: Setup Development Workstation Network
+      ovirt_network:
+        auth: "{{ ovirt_auth }}"
+        data_center: "{{ data_center_name }}"
+        name: Development_Workstations_Net
+        clusters:
+         - name: "{{ cluster_name }}"
+           assigned: true
+           required: true
+           display: false
+           migration: false
+           gluster: false
+        comment: Development DataCenter Development Workstation VM Network
+        description: Development Workstation Network
+        label: Dev_Workstation_VM_Net
+        vm_network: true
+        state: present
+        vlan_tag: 12
+
+    - name: Setup Development Server Network
+      ovirt_network:
+        auth: "{{ ovirt_auth }}"
+        data_center: "{{ data_center_name }}"
+        name: Development_Servers_Net
+        clusters:
+         - name: "{{ cluster_name }}"
+           assigned: true
+           required: true
+           display: false
+           migration: false
+           gluster: false
+        comment: Development DataCenter Development Server VM Network
+        description: Development Server Network
+        label: Dev_Server_VM_Net
+        vm_network: true
+        state: present
+        vlan_tag: 13
+
+
+    - name: Setup Development QA Systems Network
+      ovirt_network:
+        auth: "{{ ovirt_auth }}"
+        data_center: "{{ data_center_name }}"
+        name: QA_Systems_Net
+        clusters:
+         - name: "{{ cluster_name }}"
+           assigned: true
+           required: true
+           display: false
+           migration: false
+           gluster: false
+        comment: Development DataCenter QA System VM Network
+        description: QA Systems Network
+        label: QA_System_VM_Net
+        vm_network: true
+        state: present
+        vlan_tag: 16
+
+    - name: Setup RHV-H Host Network
+      ovirt_host_network:
+        auth: "{{ ovirt_auth }}"
+        name: rhv-h-1
+        check: true
+        save: true
+        bond:
+          name: bond0
+          mode: 4
+          interfaces:
+            - eth0
+            - eth1
+        networks:
+
+          - name: ovirtmgmt
+            boot_protocol: dhcp
+
+          - name: Storage_Net
+            boot_protocol: static
+            address: 192.0.3.2
+            netmask: 255.255.255.0
+            gateway: 192.0.3.254
+
+          - name: Display_Net
+            boot_protocol: static
+            address: 192.0.4.2
+            netmask: 255.255.255.0
+            gateway: 192.0.4.254
+
+
+          - name: QA_Systems_Net
+            boot_protocol: none
+
+          - name: Development_Servers_Net
+            boot_protocol: none
+
+          - name: Development_Workstations_Net
+            boot_protocol: none
+
+            
+    - name: Setup RHEL-H Host Network
+      ovirt_host_network:
+        auth: "{{ ovirt_auth }}"
+        name: rhel-h-1
+        check: true
+        save: true
+        bond:
+          name: bond0
+          mode: 4
+          interfaces:
+            - eth0
+            - eth1
+        networks:
+
+          - name: ovirtmgmt
+            boot_protocol: dhcp
+
+          - name: Storage_Net
+            boot_protocol: static
+            address: 192.0.3.7
+            netmask: 255.255.255.0
+            gateway: 192.0.3.254
+
+          - name: Display_Net
+            boot_protocol: static
+            address: 192.0.4.7
+            netmask: 255.255.255.0
+            gateway: 192.0.4.254
+
+          - name: QA_Systems_Net
+            boot_protocol: none
+
+          - name: Development_Servers_Net
+            boot_protocol: none
+
+          - name: Development_Workstations_Net
+            boot_protocol: none
+
+  post_tasks:
+    - name: Logout from RHV
+      ovirt_auth:
+        state: absent
+        ovirt_auth: "{{ ovirt_auth }}"
+      tags:
+        - alwaysovi

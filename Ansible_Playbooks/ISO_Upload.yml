@@ -1,0 +1,16 @@
+---
+- hosts: rhv-m.example.com
+  user: ansible-user
+  become: true
+  tasks:
+    - name: Copy ISO Upload Configuration File
+      copy:
+        src: ./Resources/admin-internal.conf
+        dest: /etc/ovirt-engine/isouploader.conf.d/
+    - name: Copy ISO File Locally
+      get_url:
+        url: http://classroom.example.com/materials/rhel-server-7.6-x86_64-dvd.iso
+        dest: /root/rhel-server-7.6-x86_64-dvd.iso
+        mode: 0644
+    - name: Run ISO Uploader
+      command: ovirt-iso-uploader --iso-domain=Dev_ISO_Data upload /root/rhel-server-7.6-x86_64-dvd.iso

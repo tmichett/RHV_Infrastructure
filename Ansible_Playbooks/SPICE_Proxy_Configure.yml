@@ -1,0 +1,12 @@
+---
+- hosts: rhv-m.example.com
+  user: ansible-user
+  become: true
+  tasks:
+    - name: Run ovirt-engine config
+      command: engine-config -s SpiceProxyDefault=http://utility.example.com:3128
+
+    - name: Restart ovirt-engine Service
+      systemd:
+        name: ovirt-engine
+        state: restarted

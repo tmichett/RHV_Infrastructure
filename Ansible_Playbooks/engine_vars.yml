@@ -1,0 +1,5 @@
+---
+engine_url: https://rhv-m.example.com/ovirt-engine/api
+engine_user: admin@internal
+engine_cafile: /etc/pki/ovirt-engine/ca.pem
+

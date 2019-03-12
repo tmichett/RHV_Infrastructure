@@ -1,0 +1,24 @@
+---
+- hosts: utility.example.com
+  user: ansible-user
+  become: true
+  tasks:
+    - name: Configure firewalld
+      firewalld:
+        port: 3128/tcp
+        permanent: yes
+        immediate: yes
+        state: enabled
+    - name: Install SQUID Service
+      yum:
+        name: squid
+        state: latest
+    - name: Copy SQUID Configuration File
+      copy:
+        src: ./Resources/squid.conf
+        dest: /etc/squid/squid.conf
+    - name: Start and Enable SQUID Service
+      systemd:
+        name: squid
+        enabled: yes
+        state: started
