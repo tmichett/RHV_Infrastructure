@@ -1,0 +1,55 @@
+:imagesdir: images/
+
+# RHV Infrastructure Playbooks
+
+The Ansible playbooks have been created separately to allow the setup and creation of a RHV Environment (RHV 4.2 Tested).
+
+
+The playbooks are based on a classroom environment that was intially created in Ravello. The playbooks can be easily modified by changing hostnames and inventory files to meet your specific environment requirement.
+
+image::RHV_System_Layout.png[title="RHV Environment Layout", align="center"]
+
+**NOTE**: The Utility server has already been setup and configured with IdM, NFS, and iSCSI. This will need to be considered if duplicating the environment.
+
+**Network and System Layout Details**
+
+.*RHV Environment Management Network Layout and Information*
+[cols=3,options=header]
+|===
+|Machine Name
+|IP Address
+|Role
+
+|*workstation.example.com* / *0workstation-naconsultingrhvv42-_GUID_.srv.ravcloud.com*
+|192.2.2.252 / _Assigned by Ravello_
+|Graphical Workstation as Student Desktop
+
+|*rhv-m.example.com*
+|192.2.2.1
+|Red Hat Virtualization Manager (RHV-M) - MGMT Network
+
+|*rhv-h-1.example.com*
+|192.2.2.2
+|RHV-H Hypervisor - MGMT Network
+
+|*rhv-h-2.example.com*
+|192.2.2.5
+|RHV-H Hypervisor - MGMT Network
+
+|*rhel-h-1.example.com*
+|192.2.2.7
+|RHEL-H Hypervisor - MGMT Network
+
+|*rhel-h-2.example.com*
+|192.2.2.8
+|RHEL-H Hypervisor - MGMT Network
+
+|*idm.example.com*/*utility.example.com*
+|192.2.2.50
+|RHEL Identity Management server for use with RHV / NFS and other services / Ansible Server / iSCSI Host
+
+|*classroom.example.com*
+|192.2.2.253
+|Classroom server that provides yum repos to systems within the classroom environment
+
+|===
