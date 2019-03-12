@@ -9,7 +9,10 @@ The playbooks are based on a classroom environment that was intially created in 
 
 image::RHV_System_Layout.png[title="RHV Environment Layout", align="center"]
 
-**NOTE**: The Utility server has already been setup and configured with IdM, NFS, and iSCSI. This will need to be considered if duplicating the environment.
+[NOTE]
+====
+The Utility server has already been setup and configured with IdM, NFS, and iSCSI. This will need to be considered if duplicating the environment.
+====
 
 **Network and System Layout Details**
 
@@ -51,5 +54,176 @@ image::RHV_System_Layout.png[title="RHV Environment Layout", align="center"]
 |*classroom.example.com*
 |192.2.2.253
 |Classroom server that provides yum repos to systems within the classroom environment
+
+|===
+
+
+*RHV Networking and Subnet Settings*
+[cols=4,options=header]
+|===
+
+|Subnet
+|IP Range
+|DNS Server
+|Subnet Gateway
+
+|*192.2.2.0/24*
+|192.2.2.{1-254}
+|192.2.2.254
+|192.2.2.254
+
+|*192.0.3.0/24*
+|192.0.3.{1-254}
+|192.2.2.254
+|192.0.3.254
+
+|*192.0.4.0/24*
+|192.0.4.{1-254}
+|192.2.2.254
+|192.0.4.254
+
+
+|===
+
+*RHV Networking VLAN Information*
+[cols=2,options=header]
+|===
+|VLAN ID
+|VLAN Purpose
+
+|*VLAN 1*
+|oVirt Management Network
+
+|*VLAN 3*
+|Storage/Migration Network
+
+|*VLAN 4*
+|Display Network
+
+|===
+
+
+*RHV IPMI Network Information*
+[cols=2,options=header]
+|===
+|Host
+|IPMI IP Address
+
+|*rhv-h-1*
+|192.2.2.221
+
+|*rhv-h-2*
+|192.2.2.224
+
+|*rhel-h-1*
+|192.2.2.226
+
+|*rhel-h-2*
+|192.2.2.227
+
+|===
+
+
+*RHV Networking Infrastructure IP Information*
+[cols=4,options=header]
+|===
+|Hostname
+|Management Network IP / VLAN ID
+|Storage Network IP / VLAN ID
+|Display Network IP / VLAN ID
+
+|*rhv-h-1*
+|192.2.2.2 / VLAN 1
+|192.0.3.2 / VLAN 3
+|192.0.4.2 / VLAN 4
+
+|*rhv-h-2*
+|192.2.2.5 / VLAN 1
+|192.0.3.5 / VLAN 3
+|192.0.4.5 / VLAN 4
+
+|*rhel-h-1*
+|192.2.2.7 / VLAN 1
+|192.0.3.7 / VLAN 3
+|192.0.4.7 / VLAN 4
+
+|*rhel-h-2*
+|192.2.2.8 / VLAN 1
+|192.0.3.8 / VLAN 3
+|192.0.4.8 / VLAN 4
+
+|*utility*
+|192.2.2.50 / VLAN 1
+|192.0.3.50 / VLAN 3
+|
+
+|===
+
+*RHV Networking Infrastructure Hostname Information*
+[cols=4,options=header]
+|===
+|Hostname
+|Management FQDN
+|Storage FQDN
+|Display FQDN
+
+|*rhv-h-1*
+|rhv-h-1.example.com
+|rhv-h-1-sto.example.com
+|rhv-h-1-dis.example.com
+
+
+|*rhv-h-2*
+|rhv-h-2.example.com
+|rhv-h-2-sto.example.com
+|rhv-h-2-dis.example.com
+
+
+|*rhel-h-1*
+|rhel-h-1.example.com
+|rhel-h-1-sto.example.com
+|rhel-h-1-dis.example.com
+
+
+|*rhel-h-2*
+|rhel-h-2.example.com
+|rhel-h-2-sto.example.com
+|rhel-h-2-dis.example.com
+
+
+|===
+
+*RHV VM Networking Infrastructure Information*
+[cols=4,options=header]
+|===
+|VM Network Name
+|VLAN ID
+|Subnet Information
+|Gateway IP
+
+|*Development_Workstations*
+|VLAN 12
+|192.0.12.0/24
+|192.0.12.2
+
+|*Development_Servers*
+|VLAN 13
+|192.0.13.0/24
+|192.0.13.2
+
+|*Production_Workstations*
+|VLAN 14
+|192.0.14.0/24
+|192.0.14.2
+
+|*Production_Servers*
+|VLAN 15
+|192.0.15.0/24
+|192.0.15.2
+
+|*QA_Systems*
+|VLAN 16
+|192.0.16.0/24
+|192.0.16.2
 
 |===
