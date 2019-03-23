@@ -2,6 +2,11 @@
 - hosts: utility.example.com
   user: ansible-user
   become: true
+  vars_files:
+    # Contains variables to connect to the Manager
+    - engine_vars.yml
+    # Contains encrypted engine_password variable using ansible-vault
+    - passwords.yml  
   tasks:
     - name: Configure firewalld
       firewalld:

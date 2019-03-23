@@ -1,0 +1,43 @@
+---
+- hosts: 192.0.12.100
+  user: root
+  become: true
+  vars_files:
+    # Contains variables to connect to the Manager
+    - engine_vars.yml
+    # Contains encrypted engine_password variable using ansible-vault
+    - passwords.yml
+
+  tasks:
+
+    - name: Copy REPO File
+      get_url:
+        url: http://classroom.example.com/materials/open.repo
+        dest: /etc/yum.repos.d/open.repo
+        mode: 0644
+    - name: Perform YUM Update
+      yum:
+        name: '*'
+        state: latest
+    - name: Install Cloud-Init Packages
+      yum:
+        name: cloud-init
+        state: latest
+    - name: Install LibguestFS Tools
+      yum:
+        name: libguestfs-tools
+        state: latest
+    - name: Install RHV Guest Agent Tools
+      yum:
+        name: ovirt-guest-agent-common
+        state: latest
+    - name: Start and Enable ovirt-guest-agent Service
+      systemd:
+        name: ovirt-guest-agent
+        enabled: yes
+        state: started
+    - name: Start and Enable qemu-guest-agent Service
+      systemd:
+        name: qemu-guest-agent
+        enabled: yes
+        state: started

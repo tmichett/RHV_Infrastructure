@@ -16,7 +16,7 @@
     - name: Copy REPO File
       get_url:
         url: http://classroom.example.com/materials/rhv-42-manager.repo
-        dest: /etc/yum.repos.d/rhv-42-rhel-host.repo
+        dest: /etc/yum.repos.d/rhv-42-manager.repo
         mode: 0644
     - name: Perform YUM Update
       yum:

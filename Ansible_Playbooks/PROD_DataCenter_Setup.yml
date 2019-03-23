@@ -20,8 +20,8 @@
         - always
 
   vars:
-    data_center_name: Development
-    data_center_description: Development Data Center
+    data_center_name: Production
+    data_center_description: Production Data Center
     data_center_local: false
     compatibility_version: 4.2
 
@@ -41,4 +41,4 @@
         state: absent
         ovirt_auth: "{{ ovirt_auth }}"
       tags:
-        - alwaysovi   
+        - alwaysovi

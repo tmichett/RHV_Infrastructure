@@ -1,0 +1,19 @@
+---
+- name: Deploy oVirt AAA IPA using role
+  hosts: rhv-m.example.com
+  user: ansible-user
+  become: true
+  vars_files:
+    # Contains variables to connect to the Manager
+    - engine_vars.yml
+    # Contains encrypted engine_password variable using ansible-vault
+    - passwords.yml
+  vars:
+    aaa_profile_type: ipa
+    aaa_user: uid=rhv-svc,cn=users,cn=accounts,dc=example,dc=com
+    aaa_password: r3dh4t1!
+    aaa_profile_name: idm.example.com
+    aaa_ldap:
+      - idm.example.com
+  roles:
+    - ovirt-aaa-ldap

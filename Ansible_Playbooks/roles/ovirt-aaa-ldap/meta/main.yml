@@ -1,0 +1,22 @@
+galaxy_info:
+  author: Ondra Machacek
+  description: Role to deploy oVirt AAA LDAP configuration.
+  company: Red Hat, Inc.
+
+  license: license (GPLv2, CC-BY, etc)
+
+  min_ansible_version: 2.2
+
+  platforms:
+  - name: EL
+    versions:
+    - 6
+    - 7
+  - name: Fedora
+    versions:
+    - 23
+    - 24
+  
+  galaxy_tags: [ovirt, ldap, aaa, rhv, rhev, virtualization, virt]
+
+dependencies: []

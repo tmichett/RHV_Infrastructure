@@ -1,0 +1,42 @@
+include = <{{ aaa_profile_type }}.properties>
+
+vars.user = {{ aaa_user }}
+vars.password = {{ aaa_password }}
+
+pool.default.auth.simple.bindDN = ${global:vars.user}
+pool.default.auth.simple.password = ${global:vars.password}
+{# ----------------- SRV record ----------------- #}
+{% if aaa_profile_type == "ad" %}
+pool.default.serverset.type = srvrecord
+pool.default.serverset.srvrecord.domain = {{ aaa_ldap[0] }}
+{# -------------------- AD SITE ----------------- #}
+{% if aaa_ad_site is defined %}
+pool.default.serverset.srvrecord.domain-conversion.type = regex
+pool.default.serverset.srvrecord.domain-conversion.regex.pattern = ^(?<domain>.*)$
+pool.default.serverset.srvrecord.domain-conversion.regex.replacement = {{ aaa_ad_site }}._sites.${domain}
+{% endif %}
+{% endif %}
+{# --------------------------------------------- #}
+{# ------------------ Single ------------------- #}
+{% if aaa_ldap|length == 1 %}
+pool.default.serverset.type = single
+pool.default.serverset.single.server = {{ aaa_ldap[0] }}
+{% endif %}
+{# --------------------------------------------- #}
+{# ------------ failover ----------------------- #}
+{% if aaa_ldap|length > 1 %}
+pool.default.serverset.type = failover
+{% for ldap in aaa_ldap %}
+pool.default.serverset.failover.0{{loop.index}}.server = {{ ldap }}
+{% endfor %}
+{% endif %}
+{# --------------------------------------------- #}
+{# ----------- Custom base DN ------------------ #}
+{% if aaa_base_dn is defined %}
+sequence-init.init.100-my-basedn-init-vars = my-basedn-init
+sequence.my-basedn-init.010.description = set custom baseDN
+sequence.my-basedn-init.010.type = var-set
+sequence.my-basedn-init.010.var-set.variable = simple_baseDN
+sequence.my-basedn-init.010.var-set.value = {{ aaa_base_dn }}
+{% endif %} 
+{# --------------------------------------------- #}

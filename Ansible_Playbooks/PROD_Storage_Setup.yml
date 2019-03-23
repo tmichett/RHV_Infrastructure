@@ -20,9 +20,9 @@
         - always
 
   vars:
-    data_center_name: Development
-    cluster_name: Development_Cluster
-    cluster_description: Develeopment Cluster
+    data_center_name: Production
+    cluster_name: Production_Cluster
+    cluster_description: Production Cluster
 
   tasks:
 
@@ -30,11 +30,11 @@
     - name: Gather iSCSI Facts
       ovirt_host_storage_facts:
         auth: "{{ ovirt_auth }}"
-        host: rhv-h-1
+        host: rhel-h-2
         iscsi:
          target: iqn.2019-08.com.example:prodiscsivm
          address: 192.0.3.50
-      register: dev_results
+      register: prod_results
 
     - name: Setup iSCSI Storage Facts
       set_fact:
@@ -48,14 +48,14 @@
       ovirt_storage_domain:
         auth: "{{ ovirt_auth }}"
         data_center: "{{ data_center_name }}"
-        host: rhv-h-1
+        host: rhel-h-2
         iscsi:
           target: iqn.2019-08.com.example:prodiscsivm
           lun_id: "{{ lun_id }}"
           address: 192.0.3.50
-        name: Dev_iSCSI_Data
-        comment: Development DataCenter VM Storage
-        description: Development DataCenter iSCSI Storage
+        name: Prod_iSCSI_Data
+        comment: Production DataCenter VM Storage
+        description: Production DataCenter iSCSI Storage
         domain_function: data
         state: present
         wipe_after_delete: no
@@ -65,15 +65,15 @@
       ovirt_storage_domain:
         auth: "{{ ovirt_auth }}"
         data_center: "{{ data_center_name }}"
-        host: rhel-h-1
+        host: rhel-h-2
         nfs:
          address: 192.0.3.50
-         path: /VM_Export/DEV_NFS/data
+         path: /VM_Export/PROD_NFS/data
          version: v4
-        name: Dev_NFS_Data
+        name: Prod_NFS_Data
         domain_function: data
-        comment: Development DataCenter NFS Data Domain
-        description: Development DataCenter NFS Data
+        comment: Production DataCenter NFS Data Domain
+        description: Production DataCenter NFS Data
         state: present
         wipe_after_delete: no
 
@@ -81,30 +81,30 @@
       ovirt_storage_domain:
         auth: "{{ ovirt_auth }}"
         data_center: "{{ data_center_name }}"
-        host: rhel-h-1
+        host: rhel-h-2
         nfs:
          address: 192.0.3.50
-         path: /VM_Export/DEV_NFS/iso
+         path: /VM_Export/PROD_NFS/iso
          version: v4
-        name: Dev_ISO_Data
+        name: Prod_ISO_Data
         domain_function: iso
-        comment: Development DataCenter NFS ISO Domain
-        description: Development DataCenter ISO Data
+        comment: Production DataCenter NFS ISO Domain
+        description: Production DataCenter ISO Data
         state: present
 
     - name: Setup NFS Storage Export Domain
       ovirt_storage_domain:
         auth: "{{ ovirt_auth }}"
         data_center: "{{ data_center_name }}"
-        host: rhel-h-1
+        host: rhel-h-2
         nfs:
          address: 192.0.3.50
-         path: /VM_Export/DEV_NFS/export
+         path: /VM_Export/PROD_NFS/export
          version: v4
-        name: Dev_EXPORT_Data
+        name: Prod_EXPORT_Data
         domain_function: export
-        comment: Development DataCenter NFS Export Domain
-        description: Development DataCenter Export Data
+        comment: Production DataCenter NFS Export Domain
+        description: Production DataCenter Export Data
         state: present
 
   post_tasks:

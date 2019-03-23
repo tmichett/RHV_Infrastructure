@@ -1,0 +1,44 @@
+---
+- hosts: rhv-m.example.com
+  user: ansible-user
+  become: true
+  vars_files:
+    # Contains variables to connect to the Manager
+    - engine_vars.yml
+    # Contains encrypted engine_password variable using ansible-vault
+    - passwords.yml
+
+  pre_tasks:
+    - name: Login to RHV
+      ovirt_auth:
+        url: "{{ engine_url }}"
+        username: "{{ engine_user }}"
+        password: "{{ engine_password }}"
+        ca_file: "{{ engine_cafile | default(omit) }}"
+        insecure: "{{ engine_insecure | default(true) }}"
+      tags:
+        - always
+
+  vars:
+    data_center_name: Production
+    cluster_name: Production_Cluster
+    cluster_description: Production Cluster
+
+  tasks:
+    - name: Add cluster
+      ovirt_cluster:
+        auth: "{{ ovirt_auth }}"
+        data_center: "{{ data_center_name }}"
+        state: present
+        name: "{{ cluster_name }}"
+        cpu_type: Intel Nehalem Family
+        description: "{{ cluster_description }}"
+        compatibility_version: 4.2
+
+  post_tasks:
+    - name: Logout from RHV
+      ovirt_auth:
+        state: absent
+        ovirt_auth: "{{ ovirt_auth }}"
+      tags:
+        - alwaysovi

@@ -1,7 +1,13 @@
 ---
-- hosts: rhel-h-1.example.com, rhv-h-1.example.com
+- hosts: rhel-h-2.example.com, rhv-h-2.example.com
   user: ansible-user
   become: true
+  vars_files:
+    # Contains variables to connect to the Manager
+    - engine_vars.yml
+    # Contains encrypted engine_password variable using ansible-vault
+    - passwords.yml
+
   tasks:
     - template:
         src: ./templates/iscsi_id.j2

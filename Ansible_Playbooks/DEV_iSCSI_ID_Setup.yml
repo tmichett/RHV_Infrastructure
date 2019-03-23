@@ -1,0 +1,27 @@
+---
+- hosts: rhel-h-1.example.com, rhv-h-1.example.com
+  user: ansible-user
+  become: true
+  vars_files:
+    # Contains variables to connect to the Manager
+    - engine_vars.yml
+    # Contains encrypted engine_password variable using ansible-vault
+    - passwords.yml
+
+  tasks:
+    - template:
+        src: ./templates/iscsi_id.j2
+        dest: /etc/iscsi/initiatorname.iscsi
+        owner: root
+        group: root
+        mode: 0644
+
+    - name: Restart iSCSI service
+      systemd:
+        state: restarted
+        name: iscsi
+
+    - name: Restart iSCSI_ID service
+      systemd:
+        state: restarted
+        name: iscsid

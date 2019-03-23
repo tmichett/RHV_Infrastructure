@@ -27,37 +27,15 @@
     # host_fqdn_name: rhel-h-1.example.com
 
   tasks:
-    - name: Create a VM
+    - name: Delete a VM
       ovirt_vm:
         auth: "{{ ovirt_auth }}"
-        state: present
-        name: DEV_WS_Base
+        state: absent
+        name: DEV_Dummy
         cluster: Development_Cluster
         instance_type: Developer_Workstation
         operating_system: rhel_7x64
 
-# Creates and Defines the disk to be added to the VM
-
-    - ovirt_disk:
-        auth: "{{ ovirt_auth }}"
-        name: DEV_WS_Base_Disk1
-        vm_name: DEV_WS_Base
-        size: 25GiB
-        format: raw
-        bootable: true
-        interface: virtio
-        storage_domain: Dev_iSCSI_Data
-
-# Creates and Defines the NIC to be added to the VM
-
-    - ovirt_nic:
-        auth: "{{ ovirt_auth }}"
-        name: nic1
-        vm: DEV_WS_Base
-        interface: virtio
-        profile: Development_Workstations_Net
-        network: Development_Workstations_Net
-        state: present
 
   post_tasks:
     - name: Logout from RHV

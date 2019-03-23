@@ -1,0 +1,80 @@
+---
+- hosts: rhv-m.example.com
+  user: ansible-user
+  become: true
+  vars_files:
+    # Contains variables to connect to the Manager
+    - engine_vars.yml
+    # Contains encrypted engine_password variable using ansible-vault
+    - passwords.yml
+
+  pre_tasks:
+    - name: Login to RHV
+      ovirt_auth:
+        url: "{{ engine_url }}"
+        username: "{{ engine_user }}"
+        password: "{{ engine_password }}"
+        ca_file: "{{ engine_cafile | default(omit) }}"
+        insecure: "{{ engine_insecure | default(true) }}"
+      tags:
+        - always
+
+  vars:
+    data_center_name: Development
+    cluster_name: Development_Cluster
+    cluster_description: Develeopment Cluster
+    # host_name: rhel-h-1
+    # host_fqdn_name: rhel-h-1.example.com
+
+  tasks:
+    - name: Create a VM
+      ovirt_vm:
+        auth: "{{ ovirt_auth }}"
+        state: present
+        name: DEV_WS_Base
+        cluster: Development_Cluster
+        instance_type: Developer_Workstation
+        operating_system: rhel_7x64
+        timezone: America/New_York
+        usb_support: yes
+
+# Creates and Defines the disk to be added to the VM
+
+    - ovirt_disk:
+        auth: "{{ ovirt_auth }}"
+        name: DEV_WS_Base_Disk1
+        vm_name: DEV_WS_Base
+        size: 25GiB
+        format: cow
+        bootable: true
+        interface: virtio
+        storage_domain: Dev_iSCSI_Data
+
+# Creates and Defines the NIC to be added to the VM
+
+    - ovirt_nic:
+        auth: "{{ ovirt_auth }}"
+        name: nic1
+        vm: DEV_WS_Base
+        interface: virtio
+        profile: Development_Workstations_Net
+        network: Development_Workstations_Net
+        state: present
+
+#    - name: Boot VM ISO
+#      ovirt_vm:
+#        auth: "{{ ovirt_auth }}"
+#        name: DEV_WS_Base
+#        state: running
+#        cd_iso: rhel-server-7.6-x86_64-dvd.iso
+#        boot_devices:
+#            - cdrom
+
+
+  post_tasks:
+    - name: Logout from RHV
+      ovirt_auth:
+        state: absent
+        ovirt_auth: "{{ ovirt_auth }}"
+      tags:
+        - alwaysovi

@@ -1,0 +1,38 @@
+---
+- hosts: rhel-h-2.example.com
+  user: ansible-user
+  become: true
+  vars_files:
+    # Contains variables to connect to the Manager
+    - engine_vars.yml
+    # Contains encrypted engine_password variable using ansible-vault
+    - passwords.yml
+
+  tasks:
+    - name: Copy REPO File
+      get_url:
+        url: http://classroom.example.com/materials/rhv-42-rhel-host.repo
+        dest: /etc/yum.repos.d/rhv-42-rhel-host.repo
+        mode: 0644
+
+    - name: Perform YUM Update
+      yum:
+        name: '*'
+        state: latest
+
+
+    - name: Install firewalld Packages
+      yum:
+        name: firewalld
+        state: latest
+
+    - name: Install Cockpit Package
+      yum:
+        name: cockpit-ovirt-dashboard
+        state: latest
+
+    - name: Start and Enable Cockpit Service
+      systemd:
+        name: cockpit
+        enabled: yes
+        state: started

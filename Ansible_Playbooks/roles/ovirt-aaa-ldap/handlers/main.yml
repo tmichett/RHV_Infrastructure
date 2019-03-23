@@ -1,0 +1,10 @@
+---
+# handlers file for aaa-ldap-setup
+- name: restart ovirt-engine
+  service:
+    name: ovirt-engine
+    state: restarted
+- name: restart httpd
+  service:
+    name: httpd
+    state: restarted
