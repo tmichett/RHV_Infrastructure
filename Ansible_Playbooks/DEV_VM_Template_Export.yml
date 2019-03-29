@@ -1,0 +1,74 @@
+---
+- hosts: rhv-m.example.com
+  user: ansible-user
+  become: true
+  vars_files:
+    # Contains variables to connect to the Manager
+    - engine_vars.yml
+    # Contains encrypted engine_password variable using ansible-vault
+    - passwords.yml
+
+  pre_tasks:
+    - name: Login to RHV
+      ovirt_auth:
+        url: "{{ engine_url }}"
+        username: "{{ engine_user }}"
+        password: "{{ engine_password }}"
+        ca_file: "{{ engine_cafile | default(omit) }}"
+        insecure: "{{ engine_insecure | default(true) }}"
+      tags:
+        - always
+
+  vars:
+    data_center_name: Development
+    cluster_name: Development_Cluster
+    cluster_description: Develeopment Cluster
+    # host_name: rhel-h-1
+    # host_fqdn_name: rhel-h-1.example.com
+
+  tasks:
+
+    - name: Export Template to Development Export Domain
+      ovirt_template:
+        auth: "{{ ovirt_auth }}"
+        name: Dev_WS_VM_Template
+        export_domain: Dev_EXPORT_Data
+        state: exported
+
+    - name: Detach NFS Storage Development Export Domain - Development Data Center
+      ovirt_storage_domain:
+        auth: "{{ ovirt_auth }}"
+        name: Dev_EXPORT_Data
+        state: unattached
+
+    - name: Detach NFS Storage Productionn Export Domain - Production Data Center
+      ovirt_storage_domain:
+        auth: "{{ ovirt_auth }}"
+        name: Prod_EXPORT_Data
+        state: unattached
+
+    - name: Attach NFS Storage Develepment Export Domain - Production Data Center
+      ovirt_storage_domain:
+        auth: "{{ ovirt_auth }}"
+        name:  Dev_EXPORT_Data
+        data_center: Production
+        state: present
+
+### Doesn't currently work. Template exists so won't import with clone and new name.
+#    - name: Import Template from Development Export Domain - Production Data Center
+#      ovirt_template:
+#        auth: "{{ ovirt_auth }}"
+#        name: Dev_WS_VM_Template
+#        export_domain: Dev_EXPORT_Data
+#        storage_domain: Prod_iSCSI_Data
+#        cluster: Production_Cluster
+#        state: imported
+
+
+  post_tasks:
+    - name: Logout from RHV
+      ovirt_auth:
+        state: absent
+        ovirt_auth: "{{ ovirt_auth }}"
+      tags:
+        - alwaysovi
