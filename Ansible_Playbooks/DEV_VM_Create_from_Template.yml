@@ -22,7 +22,7 @@
   vars:
     data_center_name: Development
     cluster_name: Development_Cluster
-    cluster_description: Develeopment Cluster
+    cluster_description: Development Cluster
     # host_name: rhel-h-1
     # host_fqdn_name: rhel-h-1.example.com
 
@@ -38,10 +38,10 @@
         timezone: America/New_York
         cloud_init_persist: true
         cloud_init:
-          nic_boot_protocol: static
-          nic_ip_address: 192.0.12.105
-          nic_netmask: 255.255.255.0
-          nic_gateway: 192.0.12.2
+          nic_boot_protocol: dhcp
+#          nic_ip_address: 192.0.12.105
+#          nic_netmask: 255.255.255.0
+#          nic_gateway: 192.0.12.2
           nic_name: eth0
           nic_on_boot: true
           host_name: DEV_WS_Base_1
@@ -49,12 +49,13 @@
           root_password: r3dh4t1
           authorized_ssh_keys: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCucMK8pPDth/YOScYspZI77TURQ2F+h0TAC2P0o6Ec2oXp5zwDmDrUmnK4OQsgoEyvduoSutrvn0H6UBsFvWJF7WNE+oSdrSuzhQbLJSun+YwBy3kVv2N2zuVvUy4iFVnfwoGSG4EqI6gKxpvCszjwOn2agu8XX3+Q6VUWS8BHbsBCJkjdeRnCKa4RL8iOFmZ5csK6jnjaKxDT7fOnrrvpxMeG8XunlYim+9B7iQzDpdGtPsMl16OANsZbGGd2G8k5ldjRdrwyuvSUMzbChQByMyLz/Xckse5ArXcKWOcER6iZIQe3o7cO0gAVShmriJ3ZPKNkbTj+AHloPiu0Yng7 ansible-user@idm"
           timezone: America/New_York
-          dns_servers: 192.0.12.1
-          dns_search: example.com
+#          dns_servers: 192.0.12.1
+#          dns_search: example.com
           custom_script: |
             runcmd:
             - usermod -c "Ansible User" ansible-user
-
+            runcmd:
+            - echo "r3dh4t1!" | passwd --stdin ansible-user
 
   post_tasks:
     - name: Logout from RHV

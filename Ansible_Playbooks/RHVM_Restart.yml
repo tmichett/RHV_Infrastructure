@@ -1,0 +1,20 @@
+---
+- hosts: rhv-m.example.com
+  user: ansible-user
+  become: true
+  vars_files:
+    # Contains variables to connect to the Manager
+    - engine_vars.yml
+    # Contains encrypted engine_password variable using ansible-vault
+    - passwords.yml
+
+
+  vars:
+    data_center_name: Development
+
+  tasks:
+
+    - name: Restart RHV-M Application
+      service:
+        name: ovirt-engine
+        state: restarted

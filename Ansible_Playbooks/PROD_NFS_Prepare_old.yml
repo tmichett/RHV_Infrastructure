@@ -1,3 +1,4 @@
+---
 - hosts: utility.example.com
   user: ansible-user
   become: true
@@ -7,21 +8,21 @@
     # Contains encrypted engine_password variable using ansible-vault
     - passwords.yml
   tasks:
-    - name: Create NFS Directories for PROD Environemnt
-      file:
-        path: /VM_Export/PROD_NFS/{{ item }}
-        state: directory
-        mode: 0755
-        owner: vdsm
-        group: kvm
-      loop:
-        - data
-        - export
-        - iso
+    - name: Create NFS Directories
+      shell: |
+        mkdir -p /VM_Export/PROD_NFS/{data,export,iso}
+
+    - name: Set File Ownership
+      shell: |
+        chown -R 36:36 /VM_Export/PROD_NFS/{data,export,iso}
+
+    - name: Set File Permissions
+      shell: |
+        chmod 0755 /VM_Export/PROD_NFS/{data,export,iso}
 
     - name: Copy Export Configuration File
       copy:
-        src: ./Resources/DEV_exports
+        src: ./Resources/Final_exports
         dest: /etc/exports
 
     - name: Export Filesystem

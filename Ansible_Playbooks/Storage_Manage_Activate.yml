@@ -28,31 +28,12 @@
 
   tasks:
 
-    - name: Configure Power Management RHV-H-1
-      ovirt_host_pm:
+    - name: Activate NFS Storage Develepment Export Domain - Development Data Center
+      ovirt_storage_domain:
         auth: "{{ ovirt_auth }}"
-        name: rhv-h-1
-        address: 192.2.2.221
-        options:
-          lanplus=true
-        username: admin
-        password: redhat
-        type: ipmilan
-        order: 1
-
-    - name: Configure Power Management RHEL-H-1
-      ovirt_host_pm:
-        auth: "{{ ovirt_auth }}"
-        name: rhel-h-1
-        address: 192.2.2.226
-        options:
-          lanplus=true
-        username: admin
-        password: redhat
-        type: ipmilan
-        order: 1
-
-
+        name:  Dev_EXPORT_Data
+        data_center: Development
+        state: present
 
   post_tasks:
     - name: Logout from RHV

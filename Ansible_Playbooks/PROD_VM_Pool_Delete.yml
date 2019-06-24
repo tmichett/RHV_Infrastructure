@@ -20,38 +20,18 @@
         - always
 
   vars:
-    data_center_name: Development
-    cluster_name: Development_Cluster
-    cluster_description: Development Cluster
-    # host_name: rhel-h-1
-    # host_fqdn_name: rhel-h-1.example.com
+    data_center_name: Production
+    cluster_name: Production_Cluster
+    cluster_description: Production Cluster
 
   tasks:
 
-    - name: Configure Power Management RHV-H-1
-      ovirt_host_pm:
+    - name: Delete VM Pool
+      ovirt_vmpool:
         auth: "{{ ovirt_auth }}"
-        name: rhv-h-1
-        address: 192.2.2.221
-        options:
-          lanplus=true
-        username: admin
-        password: redhat
-        type: ipmilan
-        order: 1
-
-    - name: Configure Power Management RHEL-H-1
-      ovirt_host_pm:
-        auth: "{{ ovirt_auth }}"
-        name: rhel-h-1
-        address: 192.2.2.226
-        options:
-          lanplus=true
-        username: admin
-        password: redhat
-        type: ipmilan
-        order: 1
-
+        cluster: "{{ cluster_name }}"
+        name: Demo_Pool
+        state: absent
 
 
   post_tasks:

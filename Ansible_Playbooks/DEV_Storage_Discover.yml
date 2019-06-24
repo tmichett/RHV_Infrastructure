@@ -1,6 +1,6 @@
 ---
 - hosts: rhv-m.example.com
-  gather_facts: no 
+  gather_facts: no
   user: ansible-user
   become: true
   vars_files:
@@ -23,7 +23,7 @@
   vars:
     data_center_name: Development
     cluster_name: Development_Cluster
-    cluster_description: Develeopment Cluster
+    cluster_description: Development Cluster
 
   tasks:
     - name: Gather iSCSI Facts
@@ -31,7 +31,7 @@
         auth: "{{ ovirt_auth }}"
         host: rhel-h-1
         iscsi:
-         target: iqn.2019-08.com.example:prodiscsivm 
+         target: iqn.2019-08.com.example:prodiscsivm
          address: 192.0.3.50
       register: dev_results
       # var: dev_results.ovirt_host_storages.id
@@ -48,7 +48,7 @@
     - name: Setup iSCSI Storage Facts
       set_fact:
         lun_id: "{{ ovirt_host_storages | map(attribute='id') | list }}"
-    
+
     - name: output of LUN ID
       debug:
          var: lun_id
@@ -56,7 +56,7 @@
     - name: output of Ansible facts
       debug:
          var: ansible_facts
-        # var: dev_results['ansible_facts']['ovirt_host_storages']['logical_units']['id'] 
+        # var: dev_results['ansible_facts']['ovirt_host_storages']['logical_units']['id']
     - name: Output of Ansible Facts Host Storage ID
       debug:
          #var: ansible_facts.ovirt_host_storages
@@ -69,7 +69,7 @@
         host: rhel-h-1
         iscsi:
           target: iqn.2019-08.com.example:prodiscsivm
-          lun_id: "{{ lun_id }}" 
+          lun_id: "{{ lun_id }}"
           address: 192.0.3.50
         name: test
         domain_function: data

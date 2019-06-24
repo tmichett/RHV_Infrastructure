@@ -27,31 +27,12 @@
     # host_fqdn_name: rhel-h-1.example.com
 
   tasks:
-
-    - name: Configure Power Management RHV-H-1
-      ovirt_host_pm:
+# Delete Tempalte
+    - ovirt_template:
         auth: "{{ ovirt_auth }}"
-        name: rhv-h-1
-        address: 192.2.2.221
-        options:
-          lanplus=true
-        username: admin
-        password: redhat
-        type: ipmilan
-        order: 1
-
-    - name: Configure Power Management RHEL-H-1
-      ovirt_host_pm:
-        auth: "{{ ovirt_auth }}"
-        name: rhel-h-1
-        address: 192.2.2.226
-        options:
-          lanplus=true
-        username: admin
-        password: redhat
-        type: ipmilan
-        order: 1
-
+        cluster: "{{ cluster_name }}"
+        name: Dev_WS_VM_Template
+        state: absent
 
 
   post_tasks:

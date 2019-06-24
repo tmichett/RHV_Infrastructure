@@ -22,7 +22,7 @@
   vars:
     data_center_name: Development
     cluster_name: Development_Cluster
-    cluster_description: Develeopment Cluster
+    cluster_description: Development Cluster
     # host_name: rhel-h-1
     # host_fqdn_name: rhel-h-1.example.com
 

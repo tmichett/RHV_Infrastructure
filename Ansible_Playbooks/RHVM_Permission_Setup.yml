@@ -1,0 +1,95 @@
+---
+- hosts: rhv-m.example.com
+  user: ansible-user
+  become: true
+  vars_files:
+    # Contains variables to connect to the Manager
+    - engine_vars.yml
+    # Contains encrypted engine_password variable using ansible-vault
+    - passwords.yml
+
+  pre_tasks:
+    - name: Login to RHV
+      ovirt_auth:
+        url: "{{ engine_url }}"
+        username: "{{ engine_user }}"
+        password: "{{ engine_password }}"
+        ca_file: "{{ engine_cafile | default(omit) }}"
+        insecure: "{{ engine_insecure | default(true) }}"
+      tags:
+        - always
+
+  vars:
+    data_center_name: Production
+    cluster_name: Production_Cluster
+    cluster_description: Production Cluster
+
+  tasks:
+
+### Sets up User Groups for Use in Playbook
+
+    - name: Setup Production Helpdesk Group
+      ovirt_group:
+        auth: "{{ ovirt_auth }}"
+        name: rhv-production-dc-helpdesk
+        domain: idm.example.com-authz
+
+    - name: Setup Production Admin Group
+      ovirt_group:
+        auth: "{{ ovirt_auth }}"
+        name: rhv-production-dc-admins
+        domain: idm.example.com-authz
+
+    - name: Setup Production User Group
+      ovirt_group:
+        auth: "{{ ovirt_auth }}"
+        name: rhv-production-dc-users
+        domain: idm.example.com-authz
+
+    - name: Setup Development Helpdesk Group
+      ovirt_group:
+        auth: "{{ ovirt_auth }}"
+        name: rhv-development-dc-helpdesk
+        domain: idm.example.com-authz
+
+    - name: Setup Development Admin Group
+      ovirt_group:
+        auth: "{{ ovirt_auth }}"
+        name: rhv-development-dc-admins
+        domain: idm.example.com-authz
+
+    - name: Setup Development User Group
+      ovirt_group:
+        auth: "{{ ovirt_auth }}"
+        name: rhv-development-dc-users
+        domain: idm.example.com-authz
+
+#### Sets up Permissions for Data Centers
+
+    - name: Setup Development Data Center Helpdesk Permissions
+      ovirt_permission:
+        auth: "{{ ovirt_auth }}"
+        group_name: rhv-development-dc-admins
+        authz_name: idm.example.com-authz
+        object_type: data_center
+        object_name: Development
+        role: Data_Center_Helpdesk
+
+    - name: Setup Development Data Center Admin Permissions
+      ovirt_permission:
+        auth: "{{ ovirt_auth }}"
+        group_name: rhv-development-dc-helpdesk
+        authz_name: idm.example.com-authz
+        object_type: data_center
+        object_name: Development
+        role: DataCenterAdmin
+
+
+
+  post_tasks:
+    - name: Logout from RHV
+      ovirt_auth:
+        state: absent
+        ovirt_auth: "{{ ovirt_auth }}"
+      tags:
+        - alwaysovi

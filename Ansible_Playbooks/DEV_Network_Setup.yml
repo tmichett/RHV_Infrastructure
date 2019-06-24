@@ -22,7 +22,7 @@
   vars:
     data_center_name: Development
     cluster_name: Development_Cluster
-    cluster_description: Develeopment Cluster
+    cluster_description: Development Cluster
 
   tasks:
     - name: Setup Display Network
@@ -35,7 +35,7 @@
            assigned: true
            required: true
            display: true
-           migration: true
+           migration: false
            gluster: false
         comment: Development DataCenter Display Network
         description: Display Network
@@ -160,7 +160,7 @@
           - name: Development_Workstations_Net
             boot_protocol: none
 
-            
+
     - name: Setup RHEL-H Host Network
       ovirt_host_network:
         auth: "{{ ovirt_auth }}"

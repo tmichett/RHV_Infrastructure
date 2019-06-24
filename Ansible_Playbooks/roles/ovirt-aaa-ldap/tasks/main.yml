@@ -2,7 +2,17 @@
 - name: Install AAA packages
   yum:
     name: ovirt-engine-extension-aaa-*
-    state: present
+    state: latest
+
+- name: Install AAA by name LDAP packages
+  yum:
+    name: ovirt-engine-extension-aaa-ldap-setup
+    state: latest
+
+- name: Install AAA by name MISC packages
+  yum:
+    name: ovirt-engine-extension-aaa-misc
+    state: latest
 
 - name: Install mod_auth_gssapi
   yum:
@@ -82,3 +92,10 @@
   failed_when: "0 != tool_result.rc"
   changed_when: "1 == 2"
   register: tool_result
+  notify:
+    - restart ovirt-engine
+
+- name: Restart RHV Manager
+  systemd:
+    name: ovirt-engine
+    state: restarted

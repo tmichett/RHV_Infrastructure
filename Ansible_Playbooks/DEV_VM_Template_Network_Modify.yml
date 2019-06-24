@@ -23,36 +23,34 @@
     data_center_name: Development
     cluster_name: Development_Cluster
     cluster_description: Development Cluster
-    # host_name: rhel-h-1
-    # host_fqdn_name: rhel-h-1.example.com
 
   tasks:
-
-    - name: Configure Power Management RHV-H-1
-      ovirt_host_pm:
+    - name: Get Network Facts
+      ovirt_network_facts:
         auth: "{{ ovirt_auth }}"
-        name: rhv-h-1
-        address: 192.2.2.221
-        options:
-          lanplus=true
-        username: admin
-        password: redhat
-        type: ipmilan
-        order: 1
+        pattern: name=Development_Workstations_Net*
+    - debug:
+        var: ovirt_networks
 
-    - name: Configure Power Management RHEL-H-1
-      ovirt_host_pm:
+    - name: Setup Network Facts
+      set_fact:
+        net_id: "{{ ovirt_networks | map(attribute='id') | list }}"
+
+    - name: Output of Network ID
+      debug:
+         var: net_id
+
+    - name: Set Template Network
+      ovirt_template:
         auth: "{{ ovirt_auth }}"
-        name: rhel-h-1
-        address: 192.2.2.226
-        options:
-          lanplus=true
-        username: admin
-        password: redhat
-        type: ipmilan
-        order: 1
-
-
+        state: present
+        cluster: "{{ cluster_name }}"
+        storage_domain: Dev_iSCSI_Data
+        name: Dev_WS_VM_Template
+        vnic_profile_mappings:
+          - source_network_name: Development_Servers_Net
+            source_profile_name: Development_Servers_Net
+            target_profile_id: "{{ net_id }}"
 
   post_tasks:
     - name: Logout from RHV

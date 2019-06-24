@@ -20,30 +20,26 @@
         - always
 
   vars:
-    data_center_name: Development
-    cluster_name: Development_Cluster
-    cluster_description: Development Cluster
-    # host_name: rhel-h-1
-    # host_fqdn_name: rhel-h-1.example.com
+    data_center_name: Production
+    cluster_name: Production_Cluster
+    cluster_description: Production Cluster
 
   tasks:
-    - name: Add Host RHEL-H-1
-      ovirt_host:
-        auth: "{{ ovirt_auth }}"
-        cluster: "{{ cluster_name }}"
-        state: present
-        name: rhel-h-1
-        address: rhel-h-1.example.com
-        password: "{{ root_password }}"
 
-    - name: Add Host RHV-H-1
-      ovirt_host:
-        auth: "{{ ovirt_auth }}"
-        cluster: "{{ cluster_name }}"
-        state: present
-        name: rhv-h-1
-        address: rhv-h-1.example.com
-        password: "{{ root_password }}"
+#    - name: Setup System SuperUser Permissions
+#      ovirt_permission:
+#        auth: "{{ ovirt_auth }}"
+#        user_name: tmcgee
+#        authz_name: idm.example.com-authz
+#        role: superuser
+      - ovirt_permission_facts:
+          auth: "{{ ovirt_auth }}"
+          user_name: scooper
+          authz_name: idm.example.com-authz
+      - debug:
+          var: ovirt_permissions
+
+
 
   post_tasks:
     - name: Logout from RHV

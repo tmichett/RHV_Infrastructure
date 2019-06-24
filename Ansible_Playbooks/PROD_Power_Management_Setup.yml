@@ -28,7 +28,7 @@
 
   tasks:
 
-    - name: Configure Power Managmement RHEL-H-2
+    - name: Configure Power Management RHEL-H-2
       ovirt_host_pm:
         auth: "{{ ovirt_auth }}"
         name: rhel-h-2
@@ -40,7 +40,7 @@
         type: ipmilan
         order: 1
 
-    - name: Configure Power Managmement RHV-H-2
+    - name: Configure Power Management RHV-H-2
       ovirt_host_pm:
         auth: "{{ ovirt_auth }}"
         name: rhv-h-2
